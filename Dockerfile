@@ -16,7 +16,8 @@ COPY static ./static
 # Pre-fetch Sleeper players.json at build time for caching
 RUN python -c "import sleeper_trades; import asyncio; asyncio.run(sleeper_trades.get_players())"
 
+# Let the container know it listens on the port Render will assign
 EXPOSE 8000
 
-# Run FastAPI with uvicorn
-CMD ["uvicorn", "webapp:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use the PORT environment variable Render provides
+CMD ["sh", "-c", "uvicorn webapp:app --host 0.0.0.0 --port ${PORT}"]

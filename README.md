@@ -8,20 +8,15 @@ A FastAPI web app to view all trades for a given Sleeper username across all lea
 
 ### 1. Pull the image from Docker Hub
 
-Replace `yourusername` with your Docker Hub username:
-
 ```bash
-docker pull yourusername/sleeper-web:latest
+docker pull thebatlab/sleeper-web:latest
 ```
 
 ### 2. Run the container
 
 ```bash
-docker run -d -p 8000:8000 yourusername/sleeper-web:latest
+docker run -d -p 8000:8000 -e PORT=8000 thebatlab/sleeper-web:latest
 ```
-
-* `-d` → run in the background
-* `-p 8000:8000` → map container port 8000 to host port 8000
 
 ### 3. Open in a browser
 
