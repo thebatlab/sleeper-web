@@ -1,0 +1,71 @@
+/* static/styles.css */
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 1.5rem;
+  color: #222;
+  background: #f7f7f7;
+}
+
+.card {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin: 0.25rem 0;
+}
+
+input[type="text"], input[type="number"] {
+  padding: 0.45rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 300px;
+}
+
+button {
+  padding: 0.45rem 0.9rem;
+  background: #0b6cff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+table {
+  border-collapse: collapse;        /* combine cell borders */
+  width: 100%;
+  margin-top: 1rem;
+  background: #fff;
+  border: 1px solid #888;          /* visible table border */
+}
+
+th, td {
+  border: 1px solid #888;          /* visible cell borders */
+  padding: 0.6rem;
+  vertical-align: top;
+}
+
+th {
+  background: #f0f0f0;
+  text-align: left;
+}
+
+.muted {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.error {
+  color: #8b0000;
+  font-weight: bold;
+}
+
+.small {
+  font-size: 0.9rem;
+  color: #444;
+}

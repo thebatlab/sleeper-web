@@ -1,0 +1,88 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Sleeper Trades Viewer</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="card">
+    <h1>Sleeper Trades Viewer</h1>
+    <form action="/trades" method="get" aria-label="Search trades">
+      <label>Username (required)
+        <input type="text" name="username" required placeholder="Sleeper username" value="{{ username or '' }}">
+      </label>
+      <label>Season (required)
+        <input type="number" required name="season" placeholder="e.g. 2025" value="{{ season or '' }}">
+      </label>
+      <label>Rounds (optional, comma separated)
+        <input type="text" name="rounds" placeholder="1,2,3 or leave blank for 1-18" value="{{ rounds or '' }}">
+      </label>
+      <div style="margin-top:0.5rem;">
+        <button type="submit">Show trades</button>
+      </div>
+      <div class="small" style="margin-top:0.6rem;">
+        Tip: you can also open <code>/trades?username=alice&season=2025</code> directly.
+      </div>
+    </form>
+  </div>
+
+  {% if error %}
+  <div class="card error">
+    <div class="error">Error: {{ error }}</div>
+  </div>
+  {% endif %}
+
+  {% if trades is defined and trades %}
+  <div class="card">
+    <h2>Trades for {{ username }}{% if season %} ({{ season }}){% endif %}</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>League</th>
+          <th>Assets Lost</th>
+          <th>Assets Gained</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for t in trades %}
+        <tr>
+          <td>{{ t.date | date_ymd }}</td>
+          <td>{{ t.league_name or t.league_id or "Unknown" }}</td>
+          <td>
+            {% if t.assets_lost %}
+              <ul>
+              {% for a in t.assets_lost %}
+                <li>{{ a }}</li>
+              {% endfor %}
+              </ul>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if t.assets_gained %}
+              <ul>
+              {% for a in t.assets_gained %}
+                <li>{{ a }}</li>
+              {% endfor %}
+              </ul>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <p class="small">Displayed newest first. Raw transaction data is available in the console/logs if needed.</p>
+  </div>
+  {% elif trades is defined %}
+  <div class="card">
+    <div class="small">No trades found for {{ username }}{% if season %} in {{ season }}{% endif %}.</div>
+  </div>
+  {% endif %}
+</body>
+</html>

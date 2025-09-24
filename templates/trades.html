@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trades for {{ username }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Trades for {{ username }} {% if season %} ({{ season }}){% endif %}</h1>
+    <a href="/">Search another</a>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Assets Gained</th>
+            <th>Assets Lost</th>
+        </tr>
+        {% for trade in trades %}
+        <tr>
+            <td>{{ trade.date | date_ymd }}</td>
+            <td>
+                <ul>
+                {% for a in trade.assets_gained %}
+                    <li>{{ a }}</li>
+                {% endfor %}
+                </ul>
+            </td>
+            <td>
+                <ul>
+                {% for a in trade.assets_lost %}
+                    <li>{{ a }}</li>
+                {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
