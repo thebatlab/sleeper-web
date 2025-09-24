@@ -42,8 +42,8 @@
         <tr>
           <th>Date</th>
           <th>League</th>
-          <th>Assets Lost</th>
           <th>Assets Gained</th>
+          <th>Assets Lost</th>
         </tr>
       </thead>
       <tbody>
@@ -52,9 +52,9 @@
           <td>{{ t.date | date_ymd }}</td>
           <td>{{ t.league_name or t.league_id or "Unknown" }}</td>
           <td>
-            {% if t.assets_lost %}
+            {% if t.assets_gained %}
               <ul>
-              {% for a in t.assets_lost %}
+              {% for a in t.assets_gained %}
                 <li>{{ a }}</li>
               {% endfor %}
               </ul>
@@ -63,9 +63,9 @@
             {% endif %}
           </td>
           <td>
-            {% if t.assets_gained %}
+            {% if t.assets_lost %}
               <ul>
-              {% for a in t.assets_gained %}
+              {% for a in t.assets_lost %}
                 <li>{{ a }}</li>
               {% endfor %}
               </ul>
