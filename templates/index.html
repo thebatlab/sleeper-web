@@ -13,8 +13,8 @@
       <label>Username (required)
         <input type="text" name="username" required placeholder="Sleeper username" value="{{ username or '' }}">
       </label>
-      <label>Season (required)
-        <input type="number" required name="season" placeholder="e.g. 2025" value="{{ season or '' }}">
+      <label>Season (optional - will default to current season if not specified)
+        <input type="number" name="season" placeholder="e.g. 2025" value="{{ season or '' }}">
       </label>
       <label>Rounds (optional, comma separated)
         <input type="text" name="rounds" placeholder="1,2,3 or leave blank for 1-18" value="{{ rounds or '' }}">

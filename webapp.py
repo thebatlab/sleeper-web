@@ -6,6 +6,7 @@ from pathlib import Path
 import sleeper_trades
 import logging
 from datetime import datetime
+from typing import Optional
 
 LOG = logging.getLogger("sleeper_web")
 LOG.setLevel(logging.INFO)
@@ -49,13 +50,25 @@ async def index(request: Request):
 async def trades(
     request: Request,
     username: str = Query(..., description="Sleeper username (required)"),
-    season: int = Query(None, description="Season (e.g. 2025). Defaults to current league season."),
+    season: Optional[str] = Query(None, description="Season (e.g. 2025). Defaults to current league season."),
     rounds: str = Query(None, description="Comma-separated round numbers (e.g. 1,2,3). Defaults 1-18.")
 ):
     """
     Query trades for a username. Example:
     /trades?username=alice&season=2025&rounds=1,2,3
     """
+    if season:
+        try:
+            season = int(season.strip())
+        except ValueError:
+            season = None
+
+    if not season:
+        try:
+            season = await sleeper_trades.get_current_season()
+        except Exception:
+            season = datetime.now().year  # fallback to current year dynamically
+
     # parse rounds into tuple of ints (or None)
     round_list = None
     if rounds:
@@ -63,13 +76,6 @@ async def trades(
             round_list = tuple(int(r.strip()) for r in rounds.split(",") if r.strip().isdigit())
         except Exception:
             round_list = None
-
-    # determine season if missing
-    if season is None:
-        try:
-            season = await sleeper_trades.get_current_season()
-        except Exception:
-            season = None
 
     context = {"request": request, "username": username, "season": season, "rounds": rounds}
 

@@ -103,6 +103,7 @@ async def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
         return await _safe_get(client, f"{BASE_URL}/user/{username}")
 
 
+@alru_cache(maxsize=1)
 async def get_current_season() -> int:
     """Return the current NFL season (tries /state/nfl)."""
     async with httpx.AsyncClient() as client:
