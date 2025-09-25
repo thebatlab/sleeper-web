@@ -201,7 +201,10 @@ def _is_roster_match(value: Any, roster_ids: List[str]) -> bool:
     return s in roster_ids
 
 
-def _parse_transaction_for_user(tx: Dict[str, Any], user_roster_ids: List[str], players: Dict[str, Any]) -> Dict[str, Any]:
+def _parse_transaction_for_user(tx: Dict[str, Any],
+                                user_roster_ids: List[str],
+                                players: Dict[str, Any],
+                                roster_map: Dict[str, str] = None) -> Dict[str, Any]:
     """
     Best-effort parse to determine assets_gained and assets_lost for user's roster(s).
     Returns dict: {'assets_gained': [...], 'assets_lost': [...]} (string descriptions).
@@ -220,7 +223,9 @@ def _parse_transaction_for_user(tx: Dict[str, Any], user_roster_ids: List[str], 
             # pick likely contains owner_id / previous_owner_id and season/round
             owner = _str(pick.get("owner_id") or pick.get("owner"))
             prev = _str(pick.get("previous_owner_id") or pick.get("previous_owner"))
-            desc = f"{pick.get('season', '')} R{pick.get('round', '?')} pick".strip()
+            original_owner = _str(pick.get("roster_id") or pick.get("previous_owner"))
+            original_owner_name = roster_map.get(original_owner, f"roster {original_owner}") if original_owner else "origin unknown"
+            desc = f"{pick.get('season', '')} R{pick.get('round', '?')} pick ({original_owner_name})".strip()
             if owner and owner in user_roster_ids:
                 gained.append(desc)
             if prev and prev in user_roster_ids:
@@ -295,6 +300,14 @@ async def gather_trades(username: str, season: Optional[int] = None, rounds: Opt
             users_task = _fetch_users(client, lid)
             txs, rosters, users = await asyncio.gather(txs_task, rosters_task, users_task)
 
+            # map user_id -> display_name
+            user_map = {u["user_id"]: u.get("display_name") or u.get("username") for u in users}
+            # map roster_id -> username
+            roster_map = {
+                _str(r["roster_id"]): user_map.get(r.get("owner_id"), f"user {r.get('owner_id')}")
+                for r in rosters
+            }
+
             rosters = rosters or []
             users = users or []
             txs = txs or []
@@ -322,7 +335,7 @@ async def gather_trades(username: str, season: Optional[int] = None, rounds: Opt
                 if not involved:
                     continue
 
-                parsed = _parse_transaction_for_user(tx, user_roster_ids, players)
+                parsed = _parse_transaction_for_user(tx, user_roster_ids, players, roster_map)
                 # only include if there is some asset change
                 if parsed.get("assets_gained") or parsed.get("assets_lost"):
                     entry = {
