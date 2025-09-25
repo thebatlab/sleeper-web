@@ -293,13 +293,11 @@ async def gather_trades(username: str, season: Optional[int] = None, rounds: Opt
             txs_task = _fetch_league_transactions(client, lid, rounds or tuple(range(1, 19)))
             rosters_task = _fetch_rosters(client, lid)
             users_task = _fetch_users(client, lid)
-            picks_task = _fetch_traded_picks(client, lid)
-            txs, rosters, users, picks = await asyncio.gather(txs_task, rosters_task, users_task, picks_task)
+            txs, rosters, users = await asyncio.gather(txs_task, rosters_task, users_task)
 
             rosters = rosters or []
             users = users or []
             txs = txs or []
-            picks = picks or []
 
             # list roster ids belonging to user in this league
             user_roster_ids = _roster_ids_for_user(rosters, user_id)
@@ -337,38 +335,6 @@ async def gather_trades(username: str, season: Optional[int] = None, rounds: Opt
                         "raw": parsed.get("raw"),
                     }
                     out.append(entry)
-
-            # parse traded_picks endpoint entries (these are separate)
-            for pick in picks:
-                # owner_id and previous_owner_id could be roster_ids or user_ids; try both:
-                owner = _str(pick.get("owner_id") or pick.get("owner"))
-                prev = _str(pick.get("previous_owner_id") or pick.get("previous_owner"))
-                # build description
-                season_p = pick.get("season") or pick.get("draft_season") or season
-                rnd = pick.get("round") or pick.get("draft_round") or pick.get("round_number")
-                desc = f"{season_p} R{rnd} pick".strip()
-                date = _iso_from_maybe_ts(pick.get("updated_at") or pick.get("created") or pick.get("draft_id"))
-
-                if owner and (owner in user_roster_ids or owner == user_id):
-                    out.append({
-                        "league_id": lid,
-                        "league_name": league_name,
-                        "transaction_id": None,
-                        "date": date,
-                        "assets_gained": [desc],
-                        "assets_lost": [],
-                        "raw": pick
-                    })
-                if prev and (prev in user_roster_ids or prev == user_id):
-                    out.append({
-                        "league_id": lid,
-                        "league_name": league_name,
-                        "transaction_id": None,
-                        "date": date,
-                        "assets_gained": [],
-                        "assets_lost": [desc],
-                        "raw": pick
-                    })
 
             return out
 
