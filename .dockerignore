@@ -1,0 +1,31 @@
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Git
+.git
+.gitignore
+
+# PyCharm / IDE files
+.idea/
+*.iml
+
+# Node / other package managers
+node_modules/
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+*.log
+
+# Build outputs
+dist/
+build/
+*.egg-info/
